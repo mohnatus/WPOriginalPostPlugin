@@ -15,7 +15,7 @@ function originalPluginMetaBoxView($post) {
       <?= _originalPluginCreateField($postId, 'author', __('Author name', 'original10n')); ?>
       <?= _originalPluginCreateField($postId, 'author_link', __('Author link', 'original10n')); ?>
 
-      <input type="hidden" name="original_nonce" value="<?php echo wp_create_nonce(__FILE__); ?>" />
+      <input type="hidden" name="original_nonce" value="<?= wp_create_nonce(__FILE__); ?>" />
     </fieldset>
 
   <?php
