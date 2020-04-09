@@ -115,7 +115,11 @@ function originalPluginPositionOnTopCallback() {
   $value = get_option($optionName);
   ?>
     <fieldset>
-      <input type="checkbox" name="<?= $optionName ?>" value="1" <?php checked(1, $value) ?> >
+      <label>
+        <input type="checkbox" name="<?= $optionName ?>" value="1" <?php checked(1, $value) ?> >
+        <?= __('Output a link to the original before the post text', 'original10n') ?>
+      </label>
+
     </fieldset>
   <?php
 }
@@ -129,7 +133,7 @@ function originalPluginTemplateStringCallback() {
   $fullName = "{$optionName}[{$propertyName}]";
 
   $option = get_option($optionName);
-  $value = isset($option[$propertyName]) ? $option[$propertyName] : '%LINK%{, by %AUTHOR%}';
+  $value = isset($option[$propertyName]) ? $option[$propertyName] : '';
   ?>
     <fieldset>
       <input style="width: 100%" type="text" name="<?= $fullName ?>" value="<?= htmlentities($value) ?>">
@@ -181,7 +185,11 @@ function originalPluginLinkBlankCallback() {
   $value = isset($option[$propertyName]) ? $option[$propertyName] : 0;
   ?>
     <fieldset>
-      <input type="checkbox" name="<?= $optionName ?>" value="1" <?php checked(1, $value) ?> >
+      <label>
+        <input type="checkbox" name="<?= $fullName ?>" value="1" <?php checked(1, $value) ?> >
+        <?= __('Add target=blank attribute to links', 'original10n') ?>
+      </label>
+
     </fieldset>
   <?php
 }
@@ -199,6 +207,13 @@ function originalPluginCssPrefixCallback() {
   ?>
     <fieldset>
       <input type="text" name="<?= $fullName ?>" value="<?= $value ?>">
+      <p class="description">
+        <code>.{prefix}</code> - сам блок
+        <br>
+        <code>.{prefix}__link</code> - ссылка на оригинальный пост
+        <br>
+        <code>.{prefix}__author</code> - ссылка на автора
+      </p>
     </fieldset>
   <?php
 }
