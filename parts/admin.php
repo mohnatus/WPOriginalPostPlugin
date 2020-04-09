@@ -14,6 +14,7 @@ function originalPluginMetaBoxView($post) {
       <?= _originalPluginCreateField($postId, 'title', __('Title', 'original10n')); ?>
       <?= _originalPluginCreateField($postId, 'author', __('Author name', 'original10n')); ?>
       <?= _originalPluginCreateField($postId, 'author_link', __('Author link', 'original10n')); ?>
+      <?= _originalPluginCreateField($postId, 'template', __('Template', 'original10n')); ?>
 
       <input type="hidden" name="original_nonce" value="<?= wp_create_nonce(__FILE__); ?>" />
     </fieldset>
@@ -30,6 +31,24 @@ function _originalPluginCreateField($postId, $name, $label) {
     <div class="form-group">
       <label for="<?= $id ?>"><?= $label ?></label>
       <input type="text" id="<?= $id ?>" name="original[<?= $name ?>]" value="<?= $value ?>">
+
+      <?php if ($name == 'template'): ?>
+        <p class="description">
+          <code>%LINK%</code> - <?= __('Original link', 'original10n') ?>
+          <br>
+          <code>%AUTHOR%</code> - <?= __('Original post author', 'original10n') ?>
+          <br>
+          <code>{   }</code> - <?= __('Hide if no author', 'original10n') ?>
+          <hr>
+          <code>%ORIGINAL_LINK%</code> - <?= __('Only url', 'original10n') ?>
+          <br>
+          <code>%ORIGINAL_TITLE%</code> - <?= __('Only title', 'original10n') ?>
+          <br>
+          <code>%AUTHOR_LINK%</code> - <?= __('Only author link', 'original10n') ?>
+          <br>
+          <code>%AUTHOR_NAME%</code> - <?= __('Only author name', 'original10n') ?>
+        </p>
+      <?php endif; ?>
     </div>
   <?php
 }

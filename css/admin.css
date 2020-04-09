@@ -9,3 +9,6 @@
   display: block;
   width: 100%;
 }
+#original_post_meta_box .description {
+  margin-top: 0.5em;
+}

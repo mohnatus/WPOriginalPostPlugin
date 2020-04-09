@@ -43,13 +43,18 @@ function originalPluginCreateBlockView($postId) {
   $title = get_post_meta($postId, 'original_title', 1);
   $author = get_post_meta($postId, 'original_author', 1);
   $authorLink = get_post_meta($postId, 'original_author_link', 1);
+  $template = get_post_meta($postId, 'original_template', 1);
 
   if (!$title) $title = $link;
 
   // опции
   $options = get_option('original_options');
   $prefix = isset($options['prefix']) ? $options['prefix'] : 'original'; // css-prefix
-  $template = isset($options['template']) ? $options['template'] : '%LINK%{, by %AUTHOR%}'; // шаблонная строка
+
+  if (!$template) {
+    $template = isset($options['template']) ? $options['template'] : '%LINK%{, by %AUTHOR%}'; // шаблонная строка
+  }
+
   $rel = isset($options['rel']) ? $options['rel'] : ''; // аттрибут rel
   $blank = isset($options['blank']) ? $options['blank'] : 0; // открывать в новой вкладке
 
