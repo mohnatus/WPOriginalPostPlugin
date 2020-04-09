@@ -1,57 +1,95 @@
 <?php
 
-add_action('admin_init', 'original_settings');
-function original_settings() {
+/**
+ * Выводит настройки плагина на странице Чтение (options-reading.php)
+ */
+add_action('admin_init', 'originalPluginSettings');
+function originalPluginSettings() {
+  $pageName = 'reading';
+  $sectionName = 'original_plugin_settings';
+
+  /**
+   * Добавление секции original_plugin_settings на страницу Чтение
+   */
   add_settings_section(
-    'original_settings_section',
+    $sectionName,
     __('Original post', 'original10n'),
     '',
-    'reading'
+    $pageName
   );
 
+  /**
+   * Добавление полей настроек в секцию original_plugin_settings
+   * (field_name, field_label, field_callback, page_name, section_name)
+   */
   add_settings_field(
-    'original_position_on_top',
+    'original_position_on_top_field',
     __('Set original link on top of the content', 'original10n'),
-    'original_position_view',
-    'reading',
-    'original_settings_section'
+    'originalPluginPositionOnTopCallback',
+    $pageName,
+    $sectionName
   );
   add_settings_field(
-    'original_template',
+    'original_template_string_field',
     __('Template', 'original10n'),
-    'original_template_view',
-    'reading',
-    'original_settings_section'
+    'originalPluginTemplateStringCallback',
+    $pageName,
+    $sectionName
   );
   add_settings_field(
-    'original_prefix',
+    'original_link_rel_field',
+    __('Rel attribute', 'original10n'),
+    'originalPluginLinkRelCallback',
+    $pageName,
+    $sectionName
+  );
+  add_settings_field(
+    'original_link_blank_field',
+    __('Open links in a new tab', 'original10n'),
+    'originalPluginLinkBlankCallback',
+    $pageName,
+    $sectionName
+  );
+  add_settings_field(
+    'original_css_prefix_field',
     __('CSS prefix', 'original10n'),
-    'original_prefix_view',
-    'reading',
-    'original_settings_section'
+    'originalPluginCssPrefixCallback',
+    $pageName,
+    $sectionName
   );
   add_settings_field(
-    'original_custom_css',
+    'original_custom_css_field',
     __('Custom CSS', 'original10n'),
-    'original_custom_css_view',
-    'reading',
-    'original_settings_section'
+    'originalPluginCustomCssCallback',
+    $pageName,
+    $sectionName
   );
 
-  register_setting('reading', 'original_position_on_top', 'intval');
-  register_setting('reading', 'original_custom_css');
-  register_setting('reading', 'original_options', 'original_sanitize');
+  /**
+   * Регистрация настроек плагина для сохранения
+   * (page_name, option_name, option_callback)
+   */
+  register_setting($pageName, 'original_position_on_top', 'intval');
+  register_setting($pageName, 'original_custom_css', 'strip_tags');
+  register_setting($pageName, 'original_options', 'originalPluginSanitizeCallback');
 
+  /**
+   * Установка настроек по умолчанию
+   */
   if (!get_option('original_options')) {
     update_option('original_options', [
       'template' => '%LINK%{, by %AUTHOR%}',
-      'prefix' => 'original'
+      'prefix' => 'original',
+      'rel' => 'noopener noreferrer',
+      'blank' => 0,
     ]);
   }
-
 }
 
-function original_sanitize($options) {
+/**
+ * Очистка настроек перед сохранением
+ */
+function originalPluginSanitizeCallback($options) {
   foreach($options as $name => &$val) {
     if ($name == 'template') {
       if (!$val) $val = '%LINK%{, by %AUTHOR%}';
@@ -59,46 +97,121 @@ function original_sanitize($options) {
     if ($name == 'prefix') {
       if (!$val) $val = 'original';
     }
+    if ($name == 'rel') {
+      $val = strip_tags($val);
+    }
+    if ($name == 'blank') {
+      $val = intval($val);
+    }
   }
   return $options;
 }
 
-function original_position_view() {
-    $value = get_option('original_position_on_top');
+/**
+ * Поле Позиция блока
+ */
+function originalPluginPositionOnTopCallback() {
+  $optionName = 'original_position_on_top';
+  $value = get_option($optionName);
   ?>
-    <input type="checkbox" name="original_position_on_top" value="1" <?php checked(1, $value) ?> >
+    <fieldset>
+      <input type="checkbox" name="<?= $optionName ?>" value="1" <?php checked(1, $value) ?> >
+    </fieldset>
   <?php
 }
 
-function original_template_view() {
-    $option = get_option('original_options');
-    $value = $option['template'];
+/**
+ * Поле Шаблонная строка
+ */
+function originalPluginTemplateStringCallback() {
+  $optionName = 'original_options';
+  $propertyName = 'template';
+  $fullName = "{$optionName}[{$propertyName}]";
+
+  $option = get_option($optionName);
+  $value = isset($option[$propertyName]) ? $option[$propertyName] : '%LINK%{, by %AUTHOR%}';
   ?>
     <fieldset>
-      <input style="width: 100%" type="text" name="original_options[template]" value="<?= $value ?>">
+      <input style="width: 100%" type="text" name="<?= $fullName ?>" value="<?= htmlentities($value) ?>">
       <p class="description">
         <code>%LINK%</code> - <?= __('Original link', 'original10n') ?>
         <br>
         <code>%AUTHOR%</code> - <?= __('Original post author', 'original10n') ?>
         <br>
         <code>{   }</code> - <?= __('Hide if no author', 'original10n') ?>
+        <hr>
+        <code>%ORIGINAL_LINK%</code> - <?= __('Only url', 'original10n') ?>
+        <br>
+        <code>%ORIGINAL_TITLE%</code> - <?= __('Only title', 'original10n') ?>
+        <br>
+        <code>%AUTHOR_LINK%</code> - <?= __('Only author link', 'original10n') ?>
+        <br>
+        <code>%AUTHOR_NAME%</code> - <?= __('Only author name', 'original10n') ?>
       </p>
     </fieldset>
-
   <?php
 }
 
-function original_prefix_view() {
-  $option = get_option('original_options');
-  $value = isset($option['prefix']) ? $option['prefix'] : 'original';
+/**
+ * Поле Значение атрибута rel у ссылок
+ */
+function originalPluginLinkRelCallback() {
+  $optionName = 'original_options';
+  $propertyName = 'rel';
+  $fullName = "{$optionName}[{$propertyName}]";
+
+  $option = get_option($optionName);
+  $value = isset($option[$propertyName]) ? $option[$propertyName] : '';
   ?>
-    <input type="text" name="original_options[prefix]" value="<?= $value ?>">
+    <fieldset>
+      <input style="width: 100%" type="text" name="<?= $fullName ?>" value="<?= $value ?>">
+    </fieldset>
   <?php
 }
 
-function original_custom_css_view() {
-  $value = get_option('original_custom_css');
+/**
+ * Поле Открывать ссылки в новой вкладке
+ */
+function originalPluginLinkBlankCallback() {
+  $optionName = 'original_options';
+  $propertyName = 'blank';
+  $fullName = "{$optionName}[{$propertyName}]";
+
+  $option = get_option($optionName);
+  $value = isset($option[$propertyName]) ? $option[$propertyName] : 0;
   ?>
-    <textarea name="original_custom_css" style="width: 100%" rows="10"><?= $value ?></textarea>
+    <fieldset>
+      <input type="checkbox" name="<?= $optionName ?>" value="1" <?php checked(1, $value) ?> >
+    </fieldset>
+  <?php
+}
+
+/**
+ * Поле CSS-префикс
+ */
+function originalPluginCssPrefixCallback() {
+  $optionName = 'original_options';
+  $propertyName = 'prefix';
+  $fullName = "{$optionName}[{$propertyName}]";
+
+  $option = get_option($optionName);
+  $value = isset($option[$propertyName]) ? $option[$propertyName] : 'original';
+  ?>
+    <fieldset>
+      <input type="text" name="<?= $fullName ?>" value="<?= $value ?>">
+    </fieldset>
+  <?php
+}
+
+/**
+ * Поле Пользовательский CSS-код
+ */
+function originalPluginCustomCssCallback() {
+  $optionName = 'original_custom_css';
+  $value = get_option($optionName);
+  ?>
+    <fieldset>
+      <textarea name="<?= $optionName ?>" style="width: 100%" rows="10"><?= $value ?></textarea>
+    </fieldset>
   <?php
 }

@@ -1,46 +1,53 @@
 <?php
 
+/**
+ * Добавляет блок произвольных полей на страницу поста
+ */
 add_action('add_meta_boxes', function() {
-  add_meta_box('originalpost', __('Original post', 'original10n'), 'original_meta_box_view', array('post'), 'normal', 'default');
+  add_meta_box('original_post_meta_box', __('Original post', 'original10n'), 'originalPluginMetaBoxView', array('post'), 'normal', 'default');
 }, 1);
-function original_meta_box_view($post) {
+function originalPluginMetaBoxView($post) {
   $postId = $post->ID;
-  $originalLink = get_post_meta($postId, 'original_link', 1);
-  $originalTitle = get_post_meta($postId, 'original_title', 1);
-  $originalAuthor = get_post_meta($postId, 'original_author', 1);
-  $originalAuthorlink = get_post_meta($postId, 'original_author_link', 1);
   ?>
+    <fieldset>
+      <?= _originalPluginCreateField($postId, 'link', __('Link', 'original10n')); ?>
+      <?= _originalPluginCreateField($postId, 'title', __('Title', 'original10n')); ?>
+      <?= _originalPluginCreateField($postId, 'author', __('Author name', 'original10n')); ?>
+      <?= _originalPluginCreateField($postId, 'author_link', __('Author link', 'original10n')); ?>
 
-    <div class="form-group" style="margin: 20px 0">
-      <label for="original-link"><?= __('Link', 'original10n') ?></label>
-      <br>
-      <input type="text" id="original-link" name="original[link]" value="<?= $originalLink ?>" style="width: 100%">
+      <input type="hidden" name="original_nonce" value="<?php echo wp_create_nonce(__FILE__); ?>" />
+    </fieldset>
+
+  <?php
+}
+/**
+ * Генерирует HTML-код поля
+ */
+function _originalPluginCreateField($postId, $name, $label) {
+  $value = get_post_meta($postId, 'original_'.$name, 1);
+  $id = "original_{$name}_field";
+  ?>
+    <div class="form-group">
+      <label for="<?= $id ?>"><?= $label ?></label>
+      <input type="text" id="<?= $id ?>" name="original[<?= $name ?>]" value="<?= $value ?>">
     </div>
-
-    <div class="form-group" style="margin: 20px 0">
-      <label for="original-title"><?= __('Title', 'original10n') ?></label>
-      <br>
-      <input type="text" id="original-title" name="original[title]" value="<?= $originalTitle ?>" style="width: 100%">
-    </div>
-
-    <div class="form-group" style="margin: 20px 0">
-      <label for="original-author"><?= __('Author name', 'original10n') ?></label>
-      <br>
-      <input type="text" id="original-author" name="original[author]" value="<?= $originalAuthor ?>" style="width: 100%">
-    </div>
-
-    <div class="form-group" style="margin: 20px 0">
-      <label for="original-authorlink"><?= __('Author link', 'original10n') ?></label>
-      <br>
-      <input type="text" id="original-authorlink" name="original[author_link]" value="<?= $originalAuthorlink ?>" style="width: 100%">
-    </div>
-
-    <input type="hidden" name="original_nonce" value="<?php echo wp_create_nonce(__FILE__); ?>" />
   <?php
 }
 
-add_action('save_post', 'original_meta_update', 0);
-function original_meta_update($postId) {
+/**
+ * Добавляет стили для метабокса на страницу редактирования поста
+ */
+add_action('admin_enqueue_scripts', function($hook_suffix) {
+  if ($hook_suffix == 'post.php' || $hook_suffix == 'post-new.php') {
+    wp_enqueue_style('original-plugin', plugins_url('../css/admin.css', __FILE__));
+  }
+});
+
+/**
+ * Сохраняет значения произвольных полей
+ */
+add_action('save_post', 'originalPluginMetaUpdate', 0);
+function originalPluginMetaUpdate($postId) {
   $metaBoxName = 'original';
   if (!isset($_POST[$metaBoxName])) {
     return false;
@@ -64,11 +71,11 @@ function original_meta_update($postId) {
     $metaKey = $metaBoxName.'_'.$key;
 
     if(empty($value)){
-      delete_post_meta( $postId, $metaKey );
+      delete_post_meta($postId, $metaKey);
       continue;
     }
 
-    update_post_meta( $postId, $metaKey, $value );
+    update_post_meta($postId, $metaKey, $value);
   }
 
   return $postId;

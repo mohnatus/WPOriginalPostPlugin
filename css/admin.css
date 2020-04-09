@@ -1,0 +1,11 @@
+#original_post_meta_box .form-group {
+  margin: 1em 0;
+}
+#original_post_meta_box label {
+  display: block;
+  margin-bottom: 0.5em;
+}
+#original_post_meta_box input {
+  display: block;
+  width: 100%;
+}

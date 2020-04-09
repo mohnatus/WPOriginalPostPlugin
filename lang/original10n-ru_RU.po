@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: originalpost\n"
-"POT-Creation-Date: 2020-04-09 00:26+0300\n"
+"POT-Creation-Date: 2020-04-09 13:19+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: FurryCat <furrycat.web@gmail.com>\n"
 "Language-Team: Furry Cat\n"
@@ -21,50 +21,74 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-1: src\n"
 "X-Poedit-SearchPathExcluded-2: lang\n"
 
-#: parts/admin.php:4 parts/settings.php:7
+#: parts/admin.php:7 parts/settings.php:16
 msgid "Original post"
 msgstr "Оригинал поста"
 
-#: parts/admin.php:15
+#: parts/admin.php:13
 msgid "Link"
 msgstr "Ссылка"
 
-#: parts/admin.php:21
+#: parts/admin.php:14
 msgid "Title"
 msgstr "Название"
 
-#: parts/admin.php:27
+#: parts/admin.php:15
 msgid "Author name"
 msgstr "Имя автора"
 
-#: parts/admin.php:33
+#: parts/admin.php:16
 msgid "Author link"
 msgstr "Ссылка на автора"
 
-#: parts/settings.php:14
+#: parts/settings.php:27
 msgid "Set original link on top of the content"
 msgstr "Вывести ссылку на оригинальную статью в начале поста"
 
-#: parts/settings.php:21
+#: parts/settings.php:34
 msgid "Template"
 msgstr "Шаблон"
 
-#: parts/settings.php:28
+#: parts/settings.php:41
+msgid "Rel attribute"
+msgstr "Атрибут rel ссылок"
+
+#: parts/settings.php:48
+msgid "Open links in a new tab"
+msgstr "Открывать ссылки в новой вкладке"
+
+#: parts/settings.php:55
 msgid "CSS prefix"
 msgstr "Префикс для CSS-классов"
 
-#: parts/settings.php:35
+#: parts/settings.php:62
 msgid "Custom CSS"
 msgstr "Пользовательский CSS"
 
-#: parts/settings.php:80
+#: parts/settings.php:137
 msgid "Original link"
 msgstr "Исходная ссылка"
 
-#: parts/settings.php:82
+#: parts/settings.php:139
 msgid "Original post author"
 msgstr "Автор оригинальной статьи"
 
-#: parts/settings.php:84
+#: parts/settings.php:141
 msgid "Hide if no author"
 msgstr "Скрыть, если не указан автор"
+
+#: parts/settings.php:143
+msgid "Only url"
+msgstr "Только url"
+
+#: parts/settings.php:145
+msgid "Only title"
+msgstr "Только название"
+
+#: parts/settings.php:147
+msgid "Only author link"
+msgstr "Только ссылка на автора"
+
+#: parts/settings.php:149
+msgid "Only author name"
+msgstr "Только имя автора"

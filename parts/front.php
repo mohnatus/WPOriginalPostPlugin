@@ -1,64 +1,98 @@
 <?php
 
+/**
+ * Выводит кастомные стили для блока на странице поста, если есть метаданные
+ */
 add_action('wp_head', function() {
-  if (!is_singular()) return;
+  if (!is_single()) return;
+
   global $post;
   if (!get_post_meta($post->ID, 'original_link')) {
     return;
   }
+
   $css = get_option('original_custom_css');
-  echo "<style id='origina-custom'>$css</style>";
+  echo "<style id='original-custom'>$css</style>";
 });
 
-add_filter('the_content', 'original_view');
-function original_view($content) {
+/**
+ * Добавляет блок к контенту
+ */
+add_filter('the_content', function ($content) {
   global $post;
   $postId = $post->ID;
+
+  /** Позиция блока в контенте */
   $onTop = get_option('original_position_on_top');
 
-  $block = original_create_block($postId);
+  $block = originalPluginCreateBlockView($postId);
 
   if ($onTop) return $block.$content;
   return $content.$block;
-}
+});
 
-function original_create_block($postId) {
+
+/**
+ * Генерирует блок со ссылкой на оригинальный пост
+ */
+function originalPluginCreateBlockView($postId) {
   $link = get_post_meta($postId, 'original_link', 1);
   if (!$link) return '';
 
-  $options = get_option('original_options');
-  $prefix = $options['prefix'];
-
+  // мета-данные
   $title = get_post_meta($postId, 'original_title', 1);
-  if (!$title) $title = $link;
-
   $author = get_post_meta($postId, 'original_author', 1);
   $authorLink = get_post_meta($postId, 'original_author_link', 1);
 
-  $authorHTML = '';
-  if ($author) {
-    $authorHTML = $authorLink ?
-      "<a href='$authorLink' rel='noopener noreferrer nofollow' target='_blank' class='{$prefix}__author'>$author</a>" :
-      "<span class='{$prefix}__author'>$author</span>";
-  }
+  if (!$title) $title = $link;
 
-  $linkHTML = "<a class='{$prefix}__link' href='$link' rel='noopener noreferrer nofollow' target='_blank'>$title</a>";
+  // опции
+  $options = get_option('original_options');
+  $prefix = isset($options['prefix']) ? $options['prefix'] : 'original'; // css-prefix
+  $template = isset($options['template']) ? $options['template'] : '%LINK%{, by %AUTHOR%}'; // шаблонная строка
+  $rel = isset($options['rel']) ? $options['rel'] : ''; // аттрибут rel
+  $blank = isset($options['blank']) ? $options['blank'] : 0; // открывать в новой вкладке
 
-  $template = $options['template'];
+  $linkAttrs = ($rel ? " rel='$rel'" : "").($blank ? " target='_blank'" : "");
 
-  if (!$authorHTML) {
+  /**
+   * Подготавливает шаблонную строку
+   */
+  if (!$author) {
     $template = preg_replace('~{.+?}~', '', $template, 1);
   } else {
     $template = str_replace('{', '', $template);
     $template = str_replace('}', '', $template);
   }
 
-  $html = $template;
+  /**
+   * Фрагменты для замены в шаблоне
+   */
+  $LINK_TMP = "<a class='{$prefix}__link' href='$link' $linkAttrs>$title</a>"; // полная ссылка на оригинал
+  $AUTHOR_TMP = ""; // полная ссылка на автора
+  if ($author) {
+    $AUTHOR_TMP = $authorLink ?
+      "<a href='$authorLink' $linkAttrs class='{$prefix}__author'>$author</a>" :
+      "<span class='{$prefix}__author'>$author</span>";
+  }
+  $ONLY_LINK = $link;
+  $ONLY_TITLE = $title;
+  $AUTHOR_LINK = $authorLink;
+  $AUTHOR_NAME = $author;
 
-  $html = str_replace('%LINK%', $linkHTML, $html);
-  $html = str_replace('%AUTHOR%', $authorHTML, $html);
+  /**
+   * Замена плейсхолдеров
+   */
+  $html = $template;
+  $html = str_replace('%LINK%', $LINK_TMP, $html);
+  $html = str_replace('%AUTHOR%', $AUTHOR_TMP, $html);
+  $html = str_replace('%ORIGINAL_LINK%', $ONLY_LINK, $html);
+  $html = str_replace('%ORIGINAL_TITLE%', $ONLY_TITLE, $html);
+  $html = str_replace('%AUTHOR_LINK%', $AUTHOR_LINK, $html);
+  $html = str_replace('%AUTHOR_NAME%', $AUTHOR_NAME, $html);
 
   return "<div class='{$prefix}'>
     <meta itemprop='isBasedOn' content='{$link}'>
-  $html</div>";
+    $html
+  </div>";
 }
