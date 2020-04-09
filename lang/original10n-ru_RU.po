@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: originalpost\n"
-"POT-Creation-Date: 2020-04-09 13:19+0300\n"
+"POT-Creation-Date: 2020-04-09 13:49+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: FurryCat <furrycat.web@gmail.com>\n"
 "Language-Team: Furry Cat\n"
@@ -65,30 +65,38 @@ msgstr "Префикс для CSS-классов"
 msgid "Custom CSS"
 msgstr "Пользовательский CSS"
 
-#: parts/settings.php:137
+#: parts/settings.php:120
+msgid "Output a link to the original before the post text"
+msgstr "Выводить ссылку на оригинал перед текстом поста"
+
+#: parts/settings.php:141
 msgid "Original link"
 msgstr "Исходная ссылка"
 
-#: parts/settings.php:139
+#: parts/settings.php:143
 msgid "Original post author"
 msgstr "Автор оригинальной статьи"
 
-#: parts/settings.php:141
+#: parts/settings.php:145
 msgid "Hide if no author"
 msgstr "Скрыть, если не указан автор"
 
-#: parts/settings.php:143
+#: parts/settings.php:147
 msgid "Only url"
 msgstr "Только url"
 
-#: parts/settings.php:145
+#: parts/settings.php:149
 msgid "Only title"
 msgstr "Только название"
 
-#: parts/settings.php:147
+#: parts/settings.php:151
 msgid "Only author link"
 msgstr "Только ссылка на автора"
 
-#: parts/settings.php:149
+#: parts/settings.php:153
 msgid "Only author name"
 msgstr "Только имя автора"
+
+#: parts/settings.php:190
+msgid "Add target=blank attribute to links"
+msgstr "Добавить ссылкам атрибут target=blank"
